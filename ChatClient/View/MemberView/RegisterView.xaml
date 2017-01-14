@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="ChatClient.View.MemberView.RegisterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+             xmlns:local="clr-namespace:ChatClient.View"
+             xmlns:service="clr-namespace:ChatLibrary;assembly=ChatLibrary"
+             mc:Ignorable="d" Loaded="UserControl_Loaded" Unloaded="UserControl_Unloaded">
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                    ObjectType="{x:Type sys:Enum}"
+                    x:Key="MemberGenderData">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="service:Member+Gender" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5, 0">
+            <TextBlock Text="Username :" Width="128"/>
+            <TextBox Text="{Binding Path=Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                     IsEnabled="{Binding RegisterActive, Converter={StaticResource BooleanReverseConverter}}" 
+                     Margin="0,10,0,0" Width="128" Style="{StaticResource TextBoxError}"/>
+
+            <TextBlock Text="Password :" Margin="0,10,0,0" Width="128"/>
+            <PasswordBox x:Name="boxPassword" IsEnabled="{Binding RegisterActive, Converter={StaticResource BooleanReverseConverter}}" 
+                         Margin="0,10,0,0" Width="128"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Grid.Row="0" Margin="5, 0">
+            <TextBlock Text="Gender :" Width="128"/>
+            <ComboBox Margin="0,10,0,0" Width="128" Style="{StaticResource TextBoxError}"
+                      ItemsSource="{Binding Source={StaticResource MemberGenderData}}"
+                      SelectedItem="{Binding Gender, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                      IsEnabled="{Binding RegisterActive, Converter={StaticResource BooleanReverseConverter}}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumStringConverter}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <TextBlock Text="Birthday :" Margin="0,10,0,0" Width="128"/>
+            <DatePicker SelectedDate="{Binding Path=Birthday, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                        IsEnabled="{Binding RegisterActive, Converter={StaticResource BooleanReverseConverter}}" 
+                        Width="128" FirstDayOfWeek="Monday" Style="{StaticResource TextBoxError}"></DatePicker>
+        </StackPanel>
+
+        <Button Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Content="Register" 
+                Command="{Binding RegisterCommand}" CommandParameter="{Binding ElementName=boxPassword}"
+                Margin="0,10,0,0" Width="64"/>
+    </Grid>
+</UserControl>

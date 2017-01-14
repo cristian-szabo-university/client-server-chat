@@ -1,0 +1,255 @@
+﻿<Application x:Class="ChatClient.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:ChatClient"
+             xmlns:common="clr-namespace:ChatClient.Common"
+             xmlns:converter="clr-namespace:ChatClient.Converter"
+             xmlns:service="clr-namespace:ChatLibrary;assembly=ChatLibrary"
+             StartupUri="MainWindow.xaml" Exit="Application_Exit">
+    <Application.Resources>
+        <converter:UniversalConverter x:Key="UniversalConverter"/>
+        <converter:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converter:MemberStatusConverter x:Key="MemberStatusConverter"/>
+        <converter:ChatStatusConverter x:Key="ChatStatusConverter"/>
+        <converter:MemberCurrentConverter x:Key="MemberCurrentConverter"/>
+        <converter:BooleanReverseConverter x:Key="BooleanReverseConverter"/>
+        <converter:ChatVisibilityConverter x:Key="ChatVisibilityConverter"/>
+        <converter:MemberVisibilityConverter x:Key="MemberVisibilityConverter"/>
+        <converter:EnumStringConverter x:Key="EnumStringConverter"/>
+        <converter:AdminColorConverter x:Key="AdminColorConverter"/>
+
+        <Style x:Key="TextBoxError" TargetType="{x:Type Control}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+                    <Setter Property="Background" Value="Pink"/>
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                            Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="ButtonTemplate" DataType="{x:Type system:String}">
+            <Button Content="{Binding}" 
+                    Command="{Binding DataContext.ClickCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Margin="6, 0, 6, 0" Width="48">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource UniversalConverter}">
+                        <Binding RelativeSource="{RelativeSource AncestorType={x:Type Window}}"/>
+                        <Binding Path="Content" RelativeSource="{RelativeSource Self}"/>
+                    </MultiBinding>
+                </Button.CommandParameter>
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MemberBasicTemplate" DataType="service:Member">
+            <StackPanel Orientation="Horizontal" Background="{Binding Admin, Converter={StaticResource AdminColorConverter}}">
+                <Image Width="48" Height="48" Tag="{Binding Orientation}" Margin="6, 6, 16, 6">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Orientation}" Value="Male">
+                                    <Setter Property="Source" Value="/Resources/member_male.png"/>
+                                </DataTrigger >
+                                <DataTrigger Binding="{Binding Orientation}" Value="Female">
+                                    <Setter Property="Source" Value="/Resources/member_female.png"/>
+                                </DataTrigger >
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                    <TextBlock>
+                        <Run Text="Name : "/>
+                        <Run Text="{Binding Username}" FontWeight="{Binding Converter={StaticResource MemberCurrentConverter}}"/>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Status : "/>
+                        <Ellipse Width="12" Height="12" Fill="{Binding Available, Converter={StaticResource MemberStatusConverter}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MemberFullTemplate" DataType="service:Member">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="48" Height="48" Tag="{Binding Orientation}" Margin="0, 0, 16, 0">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <DataTrigger  Binding="{Binding Orientation}" Value="Male">
+                                    <Setter Property="Source" Value="/Resources/member_male.png"/>
+                                </DataTrigger >
+                                <DataTrigger  Binding="{Binding Orientation}" Value="Female">
+                                    <Setter Property="Source" Value="/Resources/member_female.png"/>
+                                </DataTrigger >
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock>
+                        <Run Text="Name : "/>
+                        <Run Text="{Binding Username}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Birthday : "/>
+                        <Run Text="{Binding Birthday, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd/MM/yyyy}'}"/>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Status : "/>
+                        <Ellipse Width="12" Height="12" Fill="{Binding Available, Converter={StaticResource MemberStatusConverter}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="GroupChatBasicTemplate" DataType="service:GroupChat">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="48" Height="48" Source="/Resources/group.png" Margin="0, 0, 16, 0"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock>
+                        <Run Text="Name : "/>
+                        <Run Text="{Binding Name}" FontWeight="{Binding Admin, Converter={StaticResource MemberCurrentConverter}}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Admin : "/>
+                        <Run Text="{Binding Admin.Username}"/>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Status : "/>
+                        <Ellipse Width="12" Height="12" Fill="{Binding Active, Converter={StaticResource ChatStatusConverter}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="GroupChatFullTemplate" DataType="service:GroupChat">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="64" Height="64" Source="/Resources/group.png" Margin="0, 0, 16, 0"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock>
+                        <Run Text="Name : "/>
+                        <Run Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" FontWeight="{Binding Admin, Converter={StaticResource MemberCurrentConverter}}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Admin : "/>
+                        <Run Text="{Binding Admin.Username}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Min Age : "/>
+                        <Run Text="{Binding MinAge}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Total : "/>
+                        <Run Text="{Binding MemberList.Count, Mode=OneWay}"/>
+                        <Run Text=" / "/>
+                        <Run Text="{Binding MaxSize}"/>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PrivateChatTemplate" DataType="service:PrivateChat">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="48" Height="48" Source="/Resources/group.png" Margin="0, 0, 16, 0"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock>
+                        <Run Text="Name : "/>
+                        <Run Text="{Binding Name}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Person : "/>
+                        <Run Text="{Binding Person.Username}"/>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Status : "/>
+                        <Ellipse Width="12" Height="12" Fill="{Binding Active, Converter={StaticResource ChatStatusConverter}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MessageLeftTemplate">
+            <Grid Margin="0, 10, 0, 0" HorizontalAlignment="Left">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Path Data="m 0,0 l 0,16 l 16,0 l -16,-16"
+                      Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                      Margin="5,0,0,0"
+                      HorizontalAlignment="Left"/>
+                <Rectangle Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                           Grid.Row="1" Grid.RowSpan="2"/>
+                <TextBlock Text="{Binding Path=Text}"
+                           Grid.Row="1"
+                           Padding="10,5,10,0" 
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Path=Deliver, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:ddd, HH:mm}'}"
+                           Grid.Row="2"
+                           Padding="10,0,10,5"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MessageCenterTemplate">
+            <Grid Margin="0, 10, 20, 0" HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Rectangle Fill="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" 
+                        Grid.Row="0" Grid.RowSpan="2"/>
+                <TextBlock Text="{Binding Path=Text}" 
+                        Grid.Row="0"
+                        Padding="10,5,10,0"
+                        TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Path=Deliver, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:ddd, HH:mm}'}"                       
+                        Grid.Row="1"
+                        Padding="10,0,10,5"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MessageRightTemplate">
+            <Grid Margin="0, 10, 20, 0" HorizontalAlignment="Right">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Rectangle Fill="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" 
+                        Grid.Row="0" Grid.RowSpan="2"/>
+                <TextBlock Text="{Binding Path=Text}" 
+                        Grid.Row="0"
+                        Padding="10,5,10,0"
+                        TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Path=Deliver, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:ddd, HH:mm}'}"                       
+                        Grid.Row="1"
+                        Padding="10,0,10,5"/>
+                <Path Data="m 0,0 l 16,0 l 0,16 l -16,-16" 
+                    Fill="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" 
+                    Margin="0,0,5,0" 
+                    HorizontalAlignment="Right" 
+                    Grid.Row="2"/>
+            </Grid>
+        </DataTemplate>
+
+        <common:MessageTemplateSelector x:Key="MessageTemplateSelector" 
+                                       LeftTemplate="{StaticResource MessageLeftTemplate}" 
+                                       RightTemplate="{StaticResource MessageRightTemplate}"
+                                       CenterTemplate="{StaticResource MessageCenterTemplate}"/>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,22 @@
+﻿<Window x:Class="ChatClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ChatClient"
+        xmlns:view="clr-namespace:ChatClient.View"
+        mc:Ignorable="d"
+        Title="Chat App" 
+        MinWidth="768" MinHeight="512"
+        Width="768" Height="512"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <ControlTemplate TargetType="Frame" x:Key="defaultFrame">
+            <ContentPresenter />
+        </ControlTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Frame x:Name="MainFrame" Template="{StaticResource defaultFrame}"/>
+    </Grid>
+</Window>

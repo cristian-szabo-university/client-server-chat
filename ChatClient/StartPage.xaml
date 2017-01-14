@@ -1,0 +1,26 @@
+﻿<Page x:Class="ChatClient.StartPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChatClient"
+      xmlns:view="clr-namespace:ChatClient.View"
+      xmlns:viewModel="clr-namespace:ChatClient.ViewModel"
+      mc:Ignorable="d"
+      Title="StartPage">
+    <Page.DataContext>
+        <viewModel:HostPresenter/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <DataTemplate DataType="{x:Type viewModel:HostViewModel}">
+            <view:HostView DataContext="{Binding}"/>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ContentControl Content="{Binding CurrentView}"/>
+        </StackPanel>
+    </Grid>
+</Page>

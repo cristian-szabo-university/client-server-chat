@@ -28,8 +28,11 @@ The list below contains the minimum requirements to build and run the applicatio
 
 ## Screenshots
 
-<img src="screenshot-1.png" align="right" />
+Screenshot 1
+<img src="screenshot-1.png" align="center" />
 
-<img src="screenshot-2.png" align="right" />
+Screenshot 2
+<img src="screenshot-2.png" align="center" />
 
-<img src="screenshot-3.png" align="right" />
+Screenshot 3
+<img src="screenshot-3.png" align="center" />
